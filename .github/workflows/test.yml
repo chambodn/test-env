@@ -1,14 +1,14 @@
 name: Test
 on: pull_request
 jobs:
-  lint_and_test:
-    name: Lint and test
+  test:
+    name: Test 
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
         uses: actions/checkout@v3
 
-      - name: Lint Markdown
+      - name: Check env
         if: ${{ steps.filter.outputs.sandbox == 'true' }}
         run: echo "The current environment is ${{ inputs.execution_environment }}"
 
