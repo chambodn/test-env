@@ -10,9 +10,8 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v3
 
-      - name: Lint Markdown
-        if: ${{ steps.filter.outputs.sandbox == 'true' }}
-        run: echo "The current environment is ${{ inputs.execution_environment }}"
+      - name: Check env
+        run: echo "The current environment is ${{ github.environment }}"
 
       # Checks to see if any files in the PR match one of the listed file types.
       # We can use this filter to decide whether or not to run linters or tests.
