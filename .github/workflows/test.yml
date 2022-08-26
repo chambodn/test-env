@@ -1,5 +1,7 @@
 name: Test
-on: pull_request
+on: 
+  pull_request:
+  push:
 jobs:
   test:
     name: Test 
@@ -8,7 +10,7 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v3
 
-      - name: Check env
+      - name: Lint Markdown
         if: ${{ steps.filter.outputs.sandbox == 'true' }}
         run: echo "The current environment is ${{ inputs.execution_environment }}"
 
