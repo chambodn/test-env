@@ -11,7 +11,7 @@ jobs:
         uses: actions/checkout@v3
 
       - name: Check env
-        run: echo "The current environment is ${{ github }}"
+        run: echo "The current environment is ${{ tojson(github) }}"
 
       # Checks to see if any files in the PR match one of the listed file types.
       # We can use this filter to decide whether or not to run linters or tests.
