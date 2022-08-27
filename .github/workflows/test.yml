@@ -3,8 +3,9 @@ on:
   pull_request:
 
 jobs:
-  test:
-    name: Test 
+  dev:
+    name: deploy-in-dev
+    environment: dev
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
