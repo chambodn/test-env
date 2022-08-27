@@ -1,6 +1,6 @@
 dev:
-- live/dev/*
+- live/dev/**/*
 sandbox:
-- live/sandbox/*
+- live/sandbox/**/*
 envcommon:
-- _envcommon/*
+- _envcommon/**/*
