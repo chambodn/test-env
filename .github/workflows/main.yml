@@ -29,13 +29,17 @@ jobs:
       pull-requests: read
     runs-on: ubuntu-latest
     steps:
+      - name: Checkout
+        uses: actions/checkout@v3
       - name: Get branch name
+        id: branch
         env:
-          PRHEAD: ${{ github.head_ref }}
-          GITHUB_CONTEXT: ${{ toJSON(github) }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          PRNUM: ${{ github.event.pull_request.number }}
         run: |
-          echo "PRHEAD = $PRHEAD"
-          echo "$GITHUB_CONTEXT"
+          echo "::set-output name=name::$(gh pr view $PR_NUM --json headRefName -q .headRefName)"
+      - name: print
+        run: echo "${{ steps.branch.outputs.name }}"
   # dev:
   #   name: deploy-in-dev
   #   environment: dev
