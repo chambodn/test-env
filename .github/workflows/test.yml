@@ -17,7 +17,11 @@ jobs:
       pull-requests: read
     runs-on: ubuntu-latest
     steps:
-      - run: echo Hello
+      - uses: mdecoleman/pr-branch-name@1.2.0
+        id: vars
+        with:
+          repo-token: ${{ secrets.GITHUB_TOKEN }}
+      - run: echo ${{ steps.vars.outputs.branch }}
   dev:
     name: deploy-in-dev
     environment: dev
