@@ -15,7 +15,7 @@ jobs:
       - uses: dorny/paths-filter@v2
         id: changes
         with:
-          list-files: csv
+          list-files: shell
           filters: |
             sandbox:
               - 'live/sandbox/**'
@@ -27,9 +27,13 @@ jobs:
               - 'live/prod/**'
             envcommon:
               - '_envcommon/**'
-      - name: list of files
-        if: steps.filter.outputs.envcommon == 'true'
-        run: echo "Be careful you updated envcommon files ${{steps.filter.outputs.envcommon_files}}"
+      
+      - name: Check
+        if: |
+          steps.filter.outputs.sandbox == 'true' &&
+          inputs.execution_environment != 'sandbox'
+        run: |
+          echo "Be careful you are updated sandbox files targeting ${{steps.filter.outputs.sandbox_files}}"
  
   deploy:
     name: deploy

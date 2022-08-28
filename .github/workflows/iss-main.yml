@@ -1,7 +1,12 @@
-name: Test
+name: Process IssueComment events
 on:
   issue_comment:
-    
+
+permissions:
+  id-token: write
+  contents: read
+  pull-requests: write
+
 # This allows a subsequently queued workflow run to interrupt previous runs
 concurrency:
   group: "${{ github.workflow }} @ ${{ github.event.pull_request.head.label || github.head_ref || github.ref }}"
@@ -9,9 +14,6 @@ concurrency:
 
 jobs:
   check:
-    permissions:
-      contents: read
-      pull-requests: read
     runs-on: ubuntu-latest
     steps:
       - name: Checkout

@@ -25,7 +25,7 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  dev:
+  deploy-in-dev:
     if: |
       !github.event.pull_request.draft &&
       startsWith(github.head_ref, 'dev/')
@@ -34,13 +34,31 @@ jobs:
       execution_environment: dev
     secrets: inherit
 
-  sandbox:
+  deploy-in-sandbox:
     if: |
       !github.event.pull_request.draft &&
       startsWith(github.head_ref, 'sandbox/')
     uses: ./.github/workflows/deploy.yml
     with:
       execution_environment: sandbox
+    secrets: inherit
+
+  deploy-in-pre:
+    if: |
+      !github.event.pull_request.draft &&
+      startsWith(github.head_ref, 'pre/')
+    uses: ./.github/workflows/deploy.yml
+    with:
+      execution_environment: pre
+    secrets: inherit
+  
+  deploy-in-prod:
+    if: |
+      !github.event.pull_request.draft &&
+      startsWith(github.head_ref, 'prod/')
+    uses: ./.github/workflows/deploy.yml
+    with:
+      execution_environment: prod
     secrets: inherit
 
   # dev:
