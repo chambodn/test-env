@@ -64,7 +64,7 @@ jobs:
               repo: context.repo.repo,
               body: `❌🚫 **You are trying to update files located in a different environment than the environment you are targeting!** 
                 Please check the following file(s): 
-                ${{ steps.changes.outputs.sandbox_files }}
+                    ${{ steps.changes.outputs.sandbox_files }}
               `
             });
             core.setFailed('You are trying to update files located in a different environment than the environment you are targeting');
