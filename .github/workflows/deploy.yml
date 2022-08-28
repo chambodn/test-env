@@ -18,7 +18,7 @@ jobs:
               issue_number: context.issue.number,
               owner: context.repo.owner,
               repo: context.repo.repo,
-              labels: [${{ inputs.execution_environment }}"]
+              labels: [${{ inputs.execution_environment }}]
             })
   check-status:
     name: check-status
