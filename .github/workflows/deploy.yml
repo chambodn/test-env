@@ -45,17 +45,26 @@ jobs:
           (steps.filter.outputs.pre == 'true' && inputs.execution_environment != 'pre') ||
           (steps.filter.outputs.prod == 'true' && inputs.execution_environment != 'prod')
         run: |
-          echo "Be careful you are updated sandbox files targeting ${{steps.filter.outputs.sandbox_files}}"
-   #     - uses: actions/github-script@v3
-  #       with:
-  #         github-token: ${{secrets.GITHUB_TOKEN}}
-  #         script: |
-  #           github.issues.createComment({
-  #             issue_number: context.issue.number,
-  #             owner: context.repo.owner,
-  #             repo: context.repo.repo,
-  #             body: '❌🚫 Thanks for reporting!'
-  #           })
+          echo "Be careful you are updated files targeting ${{ steps.filter.outputs.sandbox_files }}"
+  
+      - name: Check changed files
+        uses: actions/github-script@v3
+        if: |
+          (steps.filter.outputs.sandbox == 'true' && inputs.execution_environment != 'sandbox') ||
+          (steps.filter.outputs.dev == 'true' && inputs.execution_environment != 'dev') ||
+          (steps.filter.outputs.pre == 'true' && inputs.execution_environment != 'pre') ||
+          (steps.filter.outputs.prod == 'true' && inputs.execution_environment != 'prod')
+        with:
+          github-token: ${{secrets.GITHUB_TOKEN}}
+          script: |
+            github.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: '❌🚫 You are trying to update files located in a different environment than the environment you are targeting!
+              Please check these files: ${{ steps.filter.outputs.sandbox_files }}
+              '
+            })
   deploy:
     name: deploy
     needs: check-status
