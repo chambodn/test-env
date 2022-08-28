@@ -23,10 +23,12 @@ jobs:
         env:
           PRHEAD: ${{ github.event.pull_request.head.label }}
           PRNUM: ${{ github.event.pull_request.number }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           echo "PRHEAD = $PRHEAD"
           echo "PRNUM = $PRNUM"
-          gh pr view 1 --json headRefName -q .headRefName
+          gh pr view $PRNUM --json headRefName -q .headRefName
+        
       - uses: mdecoleman/pr-branch-name@1.2.0
         id: vars
         with:
