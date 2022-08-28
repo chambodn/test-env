@@ -41,20 +41,20 @@ jobs:
       
       - name: Check changed files
         if: |
-          (steps.filter.outputs.sandbox == 'true' && inputs.execution_environment != 'sandbox') ||
-          (steps.filter.outputs.dev == 'true' && inputs.execution_environment != 'dev') ||
-          (steps.filter.outputs.pre == 'true' && inputs.execution_environment != 'pre') ||
-          (steps.filter.outputs.prod == 'true' && inputs.execution_environment != 'prod')
+          (steps.changes.outputs.sandbox == 'true' && inputs.execution_environment != 'sandbox') ||
+          (steps.changes.outputs.dev == 'true' && inputs.execution_environment != 'dev') ||
+          (steps.changes.outputs.pre == 'true' && inputs.execution_environment != 'pre') ||
+          (steps.changes.outputs.prod == 'true' && inputs.execution_environment != 'prod')
         run: |
-          echo "Be careful you are updated files targeting ${{ steps.filter.outputs.sandbox_files }}"
+          echo "Be careful you are updated files targeting ${{ steps.changes.outputs.sandbox_files }}"
   
       - name: Check changed files
         uses: actions/github-script@v3
         if: |
-          (steps.filter.outputs.sandbox == 'true' && inputs.execution_environment != 'sandbox') ||
-          (steps.filter.outputs.dev == 'true' && inputs.execution_environment != 'dev') ||
-          (steps.filter.outputs.pre == 'true' && inputs.execution_environment != 'pre') ||
-          (steps.filter.outputs.prod == 'true' && inputs.execution_environment != 'prod')
+          (steps.changes.outputs.sandbox == 'true' && inputs.execution_environment != 'sandbox') ||
+          (steps.changes.outputs.dev == 'true' && inputs.execution_environment != 'dev') ||
+          (steps.changes.outputs.pre == 'true' && inputs.execution_environment != 'pre') ||
+          (steps.changes.outputs.prod == 'true' && inputs.execution_environment != 'prod')
         with:
           github-token: ${{secrets.GITHUB_TOKEN}}
           script: |
@@ -63,7 +63,7 @@ jobs:
               owner: context.repo.owner,
               repo: context.repo.repo,
               body: '❌🚫 You are trying to update files located in a different environment than the environment you are targeting!
-              Please check these files: ${{ steps.filter.outputs.sandbox_files }}
+              Please check these files: ${{ steps.changes.outputs.sandbox_files }}
               '
             })
   deploy:
