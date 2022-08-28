@@ -1,0 +1,40 @@
+name: Deploy in environment
+
+on:
+  workflow_call:
+    inputs:
+      execution_environment:
+        required: true
+        type: string
+
+jobs:
+  check-status:
+    name: check-status
+    runs-on: ubuntu-latest
+    steps:
+      - uses: dorny/paths-filter@v2
+        id: changes
+        with:
+          list-files: csv
+          filters: |
+            sandbox:
+              - 'live/sandbox/**'
+            dev:
+              - 'live/dev/**'
+            pre:
+              - 'live/pre/**'
+            prod:
+              - 'live/prod/**'
+            envcommon:
+              - '_envcommon/**'
+      - name: list of files
+        if: steps.filter.outputs.envcommon == 'true'
+        run: echo "Be careful you updated envcommon files ${{steps.filter.outputs.envcommon_files}}"
+ 
+  deploy:
+    name: deploy
+    needs: check-status
+    environment: ${{ inputs.execution_environment }}
+    runs-on: ubuntu-latest
+    steps:
+      - run: echo "Deploy"
