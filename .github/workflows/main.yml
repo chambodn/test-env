@@ -32,9 +32,10 @@ jobs:
       - name: Get branch name
         env:
           PRHEAD: ${{ github.head_ref }}
+          GITHUB_CONTEXT: ${{ toJSON(github) }}
         run: |
           echo "PRHEAD = $PRHEAD"
-
+          echo "$GITHUB_CONTEXT"
   # dev:
   #   name: deploy-in-dev
   #   environment: dev
