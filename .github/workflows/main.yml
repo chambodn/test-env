@@ -36,8 +36,10 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           PRNUM: ${{ github.event.pull_request.number }}
+          GITHUB_CONTEXT: ${{ toJSON(github) }}         
         run: |
-          echo "::set-output name=name::$(gh pr view $PR_NUM --json headRefName -q .headRefName)"
+          echo "$GITHUB_CONTEXT"
+          echo "::set-output name=name::$(gh pr view $PRNUM --json headRefName -q .headRefName)"
       - name: print
         run: echo "${{ steps.branch.outputs.name }}"
   # dev:
