@@ -2,20 +2,6 @@ name: Test
 on:
   issue_comment:
     
-  pull_request:
-    types:
-      - opened
-      - synchronize
-      - reopened
-      - closed
-    paths-ignore:
-        - 'docs/**'
-        - '*.md'
-    branches:
-    # restrict actions on pull requests to only 
-    # run when created against the main branch
-      - main
-
 # This allows a subsequently queued workflow run to interrupt previous runs
 concurrency:
   group: "${{ github.workflow }} @ ${{ github.event.pull_request.head.label || github.head_ref || github.ref }}"
@@ -23,19 +9,24 @@ concurrency:
 
 jobs:
   check:
-    if: "!github.event.pull_request.draft"
     permissions:
       contents: read
       pull-requests: read
     runs-on: ubuntu-latest
     steps:
+      - name: Checkout
+        uses: actions/checkout@v3
       - name: Get branch name
+        id: branch
         env:
-          PRHEAD: ${{ github.head_ref }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          PRNUM: ${{ github.event.pull_request.number }}
+          GITHUB_CONTEXT: ${{ toJSON(github) }}         
         run: |
-          echo "PRHEAD = $PRHEAD"
-
-
+          echo "$GITHUB_CONTEXT"
+          echo "::set-output name=name::$(gh pr view $PRNUM --json headRefName -q .headRefName)"
+      - name: print
+        run: echo "${{ steps.branch.outputs.name }}"
   # dev:
   #   name: deploy-in-dev
   #   environment: dev
