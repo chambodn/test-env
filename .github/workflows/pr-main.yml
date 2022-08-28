@@ -14,24 +14,34 @@ on:
     # run when created against the main branch
       - main
 
+permissions:
+  id-token: write
+  contents: read
+  pull-requests: write
+
 # This allows a subsequently queued workflow run to interrupt previous runs
 concurrency:
   group: "${{ github.workflow }} @ ${{ github.event.pull_request.head.label || github.head_ref || github.ref }}"
   cancel-in-progress: true
 
 jobs:
-  check:
-    if: "!github.event.pull_request.draft"
-    permissions:
-      contents: read
-      pull-requests: read
-    runs-on: ubuntu-latest
-    steps:
-      - name: Get branch name
-        env:
-          BRANCH_NAME: ${{ github.head_ref }}
-        run: |
-          echo "$BRANCH_NAME"
+  dev:
+    if: |
+      !github.event.pull_request.draft &&
+      startsWith(github.head_ref, 'dev/')
+    uses: ./.github/workflows/deploy.yml
+    with:
+      execution_environment: dev
+    secrets: inherit
+
+  sandbox:
+    if: |
+      !github.event.pull_request.draft &&
+      startsWith(github.head_ref, 'dev/')
+    uses: ./.github/workflows/deploy.yml
+    with:
+      execution_environment: sandbox
+    secrets: inherit
 
   # dev:
   #   name: deploy-in-dev
