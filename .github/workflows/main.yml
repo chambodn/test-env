@@ -21,7 +21,7 @@ jobs:
         id: branch
         if: "!github.event.pull_request.draft"
         env:
-          PRHEAD: ${{ github.event.pull_request.head.label }}
+          PRHEAD: ${{ github.event.pull_request.head }}
           PRNUM: ${{ github.event.pull_request.number }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
