@@ -12,6 +12,16 @@ jobs:
     name: check-status
     runs-on: ubuntu-latest
     steps:
+      - name: Checkout
+        if: github.event_name == 'pull_request'
+        uses: actions/checkout@v3
+
+      - name: Checkout
+        if: github.event_name == 'issue_comment'
+        run: hub pr checkout ${{ github.event.issue.number }}
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
       - uses: dorny/paths-filter@v2
         id: changes
         with:
@@ -28,13 +38,24 @@ jobs:
             envcommon:
               - '_envcommon/**'
       
-      - name: Check
+      - name: Check changed files
         if: |
-          steps.filter.outputs.sandbox == 'true' &&
-          inputs.execution_environment != 'sandbox'
+          (steps.filter.outputs.sandbox == 'true' && inputs.execution_environment != 'sandbox') ||
+          (steps.filter.outputs.dev == 'true' && inputs.execution_environment != 'dev') ||
+          (steps.filter.outputs.pre == 'true' && inputs.execution_environment != 'pre') ||
+          (steps.filter.outputs.prod == 'true' && inputs.execution_environment != 'prod')
         run: |
           echo "Be careful you are updated sandbox files targeting ${{steps.filter.outputs.sandbox_files}}"
- 
+   #     - uses: actions/github-script@v3
+  #       with:
+  #         github-token: ${{secrets.GITHUB_TOKEN}}
+  #         script: |
+  #           github.issues.createComment({
+  #             issue_number: context.issue.number,
+  #             owner: context.repo.owner,
+  #             repo: context.repo.repo,
+  #             body: '❌🚫 Thanks for reporting!'
+  #           })
   deploy:
     name: deploy
     needs: check-status

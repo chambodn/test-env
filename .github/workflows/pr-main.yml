@@ -32,6 +32,7 @@ jobs:
     uses: ./.github/workflows/deploy.yml
     with:
       execution_environment: dev
+      event_name: ${{ github.event_name }}
     secrets: inherit
 
   deploy-in-sandbox:
@@ -41,6 +42,7 @@ jobs:
     uses: ./.github/workflows/deploy.yml
     with:
       execution_environment: sandbox
+      event_name: ${{ github.event_name }}
     secrets: inherit
 
   deploy-in-pre:
@@ -50,6 +52,7 @@ jobs:
     uses: ./.github/workflows/deploy.yml
     with:
       execution_environment: pre
+      event_name: ${{ github.event_name }}
     secrets: inherit
   
   deploy-in-prod:
@@ -59,50 +62,5 @@ jobs:
     uses: ./.github/workflows/deploy.yml
     with:
       execution_environment: prod
+      event_name: ${{ github.event_name }}
     secrets: inherit
-
-  # dev:
-  #   name: deploy-in-dev
-  #   environment: dev
-  #   permissions:
-  #     contents: read
-  #     pull-requests: write
-  #   runs-on: ubuntu-latest
-  #   steps:
-  #     - name: Test.
-  #       run: |
-  #         echo "Running on pr: ${{ github.ref }}"
-
-  #     - name: Checkout
-  #       uses: actions/checkout@v3
-
-  #     - name: Check env
-  #       run: echo "The current environment is ${{ secrets.ENV_NAME }}"
-
-  #     # Checks to see if any files in the PR match one of the listed file types.
-  #     # We can use this filter to decide whether or not to run linters or tests.
-  #     # You can check if a file with a listed file type is in the PR by doing:
-  #     # if: ${{ steps.filter.outputs.md == 'true' }}
-  #     # This will return true if there's a markdown file that was changed
-  #     # in the PR.
-  #     - uses: dorny/paths-filter@v2
-  #       id: filter
-  #       with:
-  #         filters: |
-  #           sandbox:
-  #             - 'live/sandbox/**'
-  #           dev:
-  #             - 'live/dev/**'
-  #           envcommon:
-  #             - '_envcommon/**'
-
-  #     - uses: actions/github-script@v3
-  #       with:
-  #         github-token: ${{secrets.GITHUB_TOKEN}}
-  #         script: |
-  #           github.issues.createComment({
-  #             issue_number: context.issue.number,
-  #             owner: context.repo.owner,
-  #             repo: context.repo.repo,
-  #             body: '❌🚫 Thanks for reporting!'
-  #           })
