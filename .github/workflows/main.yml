@@ -1,5 +1,7 @@
 name: Test
-on: 
+on:
+  issue_comment:
+    
   pull_request:
     types:
       - opened
@@ -28,41 +30,10 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Get branch name
-        id: branch
         env:
-          PRHEAD: ${{ github.event.pull_request.head.label }}
-          PRNUM: ${{ github.event.pull_request.number }}
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          GITHUB_CONTEXT: ${{ toJSON(github) }}
+          PRHEAD: ${{ github.head_ref }}
         run: |
           echo "PRHEAD = $PRHEAD"
-          echo "PRNUM = $PRNUM"
-          echo "$GITHUB_CONTEXT"
-        
-      - uses: mdecoleman/pr-branch-name@1.2.0
-        id: vars
-        with:
-          repo-token: ${{ secrets.GITHUB_TOKEN }}
-      - run: echo ${{ steps.vars.outputs.branch }}
-      - uses: dorny/paths-filter@v2
-        id: changes
-        with:
-          filters: |
-            sandbox:
-              - 'live/sandbox/**'
-            dev:
-              - 'live/dev/**'
-            envcommon:
-              - '_envcommon/**'
-      - name: Run the action # You would run your tests before this using the output to set state/desc
-        uses: Sibz/github-status-action@v1
-        if: steps.changes.outputs.dev != 'true' && !startsWith(steps.vars.outputs.branch, 'dev')
-        with: 
-          authToken: ${{secrets.GITHUB_TOKEN}}
-          context: 'Test run'
-          description: 'Passed'
-          state: 'success'
-          sha: ${{github.event.pull_request.head.sha || github.sha}}
 
   # dev:
   #   name: deploy-in-dev
