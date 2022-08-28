@@ -6,12 +6,22 @@ on:
       - synchronize
       - reopened
       - closed
+    paths-ignore:
+        - 'docs/**'
+        - '*.md'
     branches:
     # restrict actions on pull requests to only 
     # run when created against the main branch
       - main
+
+# This allows a subsequently queued workflow run to interrupt previous runs
+concurrency:
+  group: "${{ github.workflow }} @ ${{ github.event.pull_request.head.label || github.head_ref || github.ref }}"
+  cancel-in-progress: true
+
 jobs:
   check:
+    if: "!github.event.pull_request.draft"
     permissions:
       contents: read
       pull-requests: read
@@ -19,15 +29,15 @@ jobs:
     steps:
       - name: Get branch name
         id: branch
-        if: "!github.event.pull_request.draft"
         env:
-          PRHEAD: ${{ github.event.pull_request.head }}
+          PRHEAD: ${{ github.event.pull_request.head.label }}
           PRNUM: ${{ github.event.pull_request.number }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_CONTEXT: ${{ toJSON(github) }}
         run: |
           echo "PRHEAD = $PRHEAD"
           echo "PRNUM = $PRNUM"
-          gh pr view $PRNUM --json headRefName -q .headRefName
+          echo "$GITHUB_CONTEXT"
         
       - uses: mdecoleman/pr-branch-name@1.2.0
         id: vars
