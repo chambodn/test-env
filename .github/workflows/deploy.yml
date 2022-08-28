@@ -8,6 +8,18 @@ on:
         type: string
 
 jobs:
+  apply-label:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/github-script@v6
+        with:
+          script: |
+            github.rest.issues.addLabels({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              labels: [${{ inputs.execution_environment }}"]
+            })
   check-status:
     name: check-status
     runs-on: ubuntu-latest
@@ -26,7 +38,7 @@ jobs:
       - uses: dorny/paths-filter@v2
         id: changes
         with:
-          list-files: shell
+          list-files: csv
           filters: |
             sandbox:
               - 'live/sandbox/**'
@@ -40,34 +52,36 @@ jobs:
               - '_envcommon/**'
       
       - name: Check changed files
-        if: |
-          (steps.changes.outputs.sandbox == 'true' && inputs.execution_environment != 'sandbox') ||
-          (steps.changes.outputs.dev == 'true' && inputs.execution_environment != 'dev') ||
-          (steps.changes.outputs.pre == 'true' && inputs.execution_environment != 'pre') ||
-          (steps.changes.outputs.prod == 'true' && inputs.execution_environment != 'prod')
-        run: |
-          echo "Be careful you are updated files targeting ${{ steps.changes.outputs.sandbox_files }}"
-  
-      - name: Check changed files
         uses: actions/github-script@v3
         if: |
           (steps.changes.outputs.sandbox == 'true' && inputs.execution_environment != 'sandbox') ||
           (steps.changes.outputs.dev == 'true' && inputs.execution_environment != 'dev') ||
           (steps.changes.outputs.pre == 'true' && inputs.execution_environment != 'pre') ||
           (steps.changes.outputs.prod == 'true' && inputs.execution_environment != 'prod')
+        env: 
+          SANDBOX_FILES: ${{ steps.changes.outputs.sandbox_files }}
+          DEV_FILES: ${{ steps.changes.outputs.dev_files }}
+          PRE_FILES: ${{ steps.changes.outputs.pre_files }}
+          PROD_FILES: ${{ steps.changes.outputs.prod_files }}
+          ENVCOMMON_FILES: ${{ steps.changes.outputs.envcommon_files }}
+          ENV: ${{ inputs.execution_environment }}
         with:
           github-token: ${{secrets.GITHUB_TOKEN}}
           script: |
+            const { SANDBOX_FILES, DEV_FILES, PRE_FILES, PROD_FILES, ENVCOMMON_FILES, ENV } = process.env
+            const { default: printStuff } = await import('${{ github.workspace }}/.github/helper/src/function.js')
+            await printStuff()
+
             github.issues.createComment({
               issue_number: context.issue.number,
               owner: context.repo.owner,
               repo: context.repo.repo,
-              body: `❌🚫 **You are trying to update files located in a different environment than the environment you are targeting (${{ inputs.execution_environment }})!** 
+              body: `❌🚫 **WARNING** You are trying to update files located in a different environment than the environment you are targeting (${{ inputs.execution_environment }})! 
                 Please check the following file(s): 
                     ${{ steps.changes.outputs.sandbox_files }}
               `
-            });
-            core.setFailed('You are trying to update files located in a different environment than the environment you are targeting');
+            })
+            core.setFailed('You are trying to update files located in a different environment than the environment you are targeting')
   deploy:
     name: deploy
     needs: check-status
