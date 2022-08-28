@@ -31,7 +31,7 @@ jobs:
         env:
           BRANCH_NAME: ${{ github.ref }}
         run: |
-          echo "PRHEAD = $PRHEAD"
+          echo "$BRANCH_NAME"
 
   # dev:
   #   name: deploy-in-dev
