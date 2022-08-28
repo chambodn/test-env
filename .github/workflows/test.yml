@@ -11,7 +11,7 @@ on:
     # run when created against the main branch
       - main
 jobs:
-  triage:
+  check:
     permissions:
       contents: read
       pull-requests: read
@@ -22,6 +22,26 @@ jobs:
         with:
           repo-token: ${{ secrets.GITHUB_TOKEN }}
       - run: echo ${{ steps.vars.outputs.branch }}
+      - uses: dorny/paths-filter@v2
+        id: changes
+        with:
+          filters: |
+            sandbox:
+              - 'live/sandbox/**'
+            dev:
+              - 'live/dev/**'
+            envcommon:
+              - '_envcommon/**'
+      - name: Run the action # You would run your tests before this using the output to set state/desc
+        uses: Sibz/github-status-action@v1
+        if: steps.changes.outputs.sandbox == 'true' && startsWith(steps.vars.outputs.branch, 'dev')
+        with: 
+          authToken: ${{secrets.GITHUB_TOKEN}}
+          context: 'Test run'
+          description: 'Passed'
+          state: 'success'
+          sha: ${{github.event.pull_request.head.sha || github.sha}}
+
   dev:
     name: deploy-in-dev
     environment: dev
