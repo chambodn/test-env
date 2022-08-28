@@ -37,7 +37,7 @@ jobs:
   sandbox:
     if: |
       !github.event.pull_request.draft &&
-      startsWith(github.head_ref, 'dev/')
+      startsWith(github.head_ref, 'sandbox/')
     uses: ./.github/workflows/deploy.yml
     with:
       execution_environment: sandbox
