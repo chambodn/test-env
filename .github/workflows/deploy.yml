@@ -12,6 +12,7 @@ jobs:
     name: check-status
     runs-on: ubuntu-latest
     steps:
+      - run: echo "Targent env ${{ inputs.execution_environment }}"
       - name: Checkout
         if: github.event_name == 'pull_request'
         uses: actions/checkout@v3
