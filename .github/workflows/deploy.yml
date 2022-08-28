@@ -71,7 +71,7 @@ jobs:
             const { SANDBOX_FILES, DEV_FILES, PRE_FILES, PROD_FILES, ENVCOMMON_FILES, ENV } = process.env
             const { default: printStuff } = await import('${{ github.workspace }}/.github/helper/src/function.js')
             await printStuff()
-
+            await checkEnv()
             github.issues.createComment({
               issue_number: context.issue.number,
               owner: context.repo.owner,
