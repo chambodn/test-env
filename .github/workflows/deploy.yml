@@ -62,7 +62,7 @@ jobs:
               issue_number: context.issue.number,
               owner: context.repo.owner,
               repo: context.repo.repo,
-              body: `❌🚫 **You are trying to update files located in a different environment than the environment you are targeting!** 
+              body: `❌🚫 **You are trying to update files located in a different environment than the environment you are targeting (${{ inputs.execution_environment }})!** 
                 Please check the following file(s): 
                     ${{ steps.changes.outputs.sandbox_files }}
               `
