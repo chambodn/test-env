@@ -1,2 +1,2 @@
-export default function printStuff() { console.log('stuff') }
-export default function checkEnv() { console.log('env') }
+export function printStuff() { console.log('stuff') }
+export function checkEnv() { console.log('env') }
