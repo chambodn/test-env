@@ -1,8 +1,0 @@
-dev:
-- live/dev/**/*
-sandbox:
-- live/sandbox/**/*
-envcommon:
-- _envcommon/**/*
-root:
-- '*'
