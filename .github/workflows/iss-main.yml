@@ -29,7 +29,7 @@ jobs:
       branch: ${{ steps.get-branch.outputs.branch }}
   
   deploy-in-sandbox:
-    if: startsWith(need.init.outputs.branch, 'sandbox/')
+    if: startsWith(needs.init.outputs.branch, 'sandbox/')
     uses: ./.github/workflows/deploy.yml
     needs: init
     with:
@@ -37,7 +37,7 @@ jobs:
     secrets: inherit
 
   deploy-in-dev:
-    if: startsWith(need.init.outputs.branch, 'dev/')
+    if: startsWith(needs.init.outputs.branch, 'dev/')
     uses: ./.github/workflows/deploy.yml
     needs: init
     with:
@@ -45,7 +45,7 @@ jobs:
     secrets: inherit
 
   deploy-in-pre:
-    if: startsWith(need.init.outputs.branch, 'pre/')
+    if: startsWith(needs.init.outputs.branch, 'pre/')
     uses: ./.github/workflows/deploy.yml
     needs: init
     with:
@@ -53,7 +53,7 @@ jobs:
     secrets: inherit
   
   deploy-in-prod:
-    if: startsWith(need.init.outputs.branch, 'prod/')
+    if: startsWith(needs.init.outputs.branch, 'prod/')
     uses: ./.github/workflows/deploy.yml
     needs: init
     with:
