@@ -1,5 +1,3 @@
-export function printStuff() { console.log('stuff') }
-export function checkEnv() { console.log('env') }
 export function changedFilesByEnv(strSandboxChangedFiles, strDevChangedFiles,
     strPreChangedFiles, strProdChangedFiles) {
 
@@ -10,9 +8,9 @@ export function changedFilesByEnv(strSandboxChangedFiles, strDevChangedFiles,
     filesPerEnv.set('prod', strProdChangedFiles.split(','))
     return filesPerEnv
 }
-export function getIncorrectListOfChangedFiles() {
-    if (changedFiles) {
-        return changedFiles.split(',');
-    }
-    return [];
+
+export function listOfIncorrectFiles(filesPerEnv, currentEnv) {
+    filesPerEnv.delete(currentEnv)// filter env first
+    const values = Array.from(filesPerEnv.values())//array of arrays
+    return  Array.prototype.concat.apply([], values);//flatten array of arrays
 }

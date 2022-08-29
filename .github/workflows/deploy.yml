@@ -68,11 +68,12 @@ jobs:
           github-token: ${{secrets.GITHUB_TOKEN}}
           script: |
             const { SANDBOX_FILES, DEV_FILES, PRE_FILES, PROD_FILES, ENVCOMMON_FILES, ENV } = process.env
-            const { printStuff, checkEnv, changedFilesByEnv } = await import('${{ github.workspace }}/.github/helper/src/function.js')
+            const { changedFilesByEnv } = await import('${{ github.workspace }}/.github/helper/src/function.js')
 
             const map = await changedFilesByEnv(SANDBOX_FILES, DEV_FILES, PRE_FILES, PROD_FILES)
-
             console.log(map)
+            const list = await listOfIncorrectFiles(map)
+            console.log(list)
 
             github.issues.createComment({
               issue_number: context.issue.number,
