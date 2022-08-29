@@ -11,6 +11,7 @@ export function changedFilesByEnv(strSandboxChangedFiles, strDevChangedFiles,
 
 export function listOfIncorrectFiles(filesPerEnv, currentEnv) {
     filesPerEnv.delete(currentEnv)// filter env first
-    const values = Array.from(filesPerEnv.values())//array of arrays
-    return  Array.prototype.concat.apply([], values);//flatten array of arrays
+    const values = [...filesPerEnv.values()]
+    const list = Array.prototype.concat.apply([], values);//flatten array of arrays
+    return list.filter(elem => elem.length == 0);
 }
