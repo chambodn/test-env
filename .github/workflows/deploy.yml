@@ -68,7 +68,7 @@ jobs:
           github-token: ${{secrets.GITHUB_TOKEN}}
           script: |
             const { SANDBOX_FILES, DEV_FILES, PRE_FILES, PROD_FILES, ENVCOMMON_FILES, ENV } = process.env
-            const { changedFilesByEnv } = await import('${{ github.workspace }}/.github/helper/src/function.js')
+            const { changedFilesByEnv, listOfIncorrectFiles } = await import('${{ github.workspace }}/.github/helper/src/function.js')
 
             const map = await changedFilesByEnv(SANDBOX_FILES, DEV_FILES, PRE_FILES, PROD_FILES)
             console.log(map)
