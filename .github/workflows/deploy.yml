@@ -52,11 +52,6 @@ jobs:
 
       - name: Check changed files
         uses: actions/github-script@v3
-        if: |
-          (steps.changes.outputs.sandbox == 'true' && inputs.execution_environment != 'sandbox') ||
-          (steps.changes.outputs.dev == 'true' && inputs.execution_environment != 'dev') ||
-          (steps.changes.outputs.pre == 'true' && inputs.execution_environment != 'pre') ||
-          (steps.changes.outputs.prod == 'true' && inputs.execution_environment != 'prod')
         env:
           SANDBOX_FILES: ${{ steps.changes.outputs.sandbox_files }}
           DEV_FILES: ${{ steps.changes.outputs.dev_files }}
@@ -76,7 +71,7 @@ jobs:
             console.log(list);
 
             if (list.length > 0) {
-              const result = list.join("\r\n");
+              const result = list.join("\n\r");
               github.issues.createComment({
                 issue_number: context.issue.number,
                 owner: context.repo.owner,
