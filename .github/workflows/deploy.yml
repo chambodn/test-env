@@ -69,10 +69,10 @@ jobs:
           github-token: ${{secrets.GITHUB_TOKEN}}
           script: |
             const { SANDBOX_FILES, DEV_FILES, PRE_FILES, PROD_FILES, ENVCOMMON_FILES, ENV } = process.env
-            const { printStuff, checkEnv } = await import('${{ github.workspace }}/.github/helper/src/function.js')
+            const { printStuff, checkEnv, stringToList } = await import('${{ github.workspace }}/.github/helper/src/function.js')
             
-            await printStuff()
-            await checkEnv()
+            const list = await stringToList(SANDBOX_FILES)
+            console.log(list)
             github.issues.createComment({
               issue_number: context.issue.number,
               owner: context.repo.owner,
