@@ -75,8 +75,8 @@ jobs:
             const list = await listOfIncorrectFiles(map)
             console.log(list)
 
-            if list.length > 0 {
-              const result = list.join("\r\n");
+            if (list.length) > 0 {
+              const result = list.join("\r\n")
               github.issues.createComment({
                 issue_number: context.issue.number,
                 owner: context.repo.owner,
