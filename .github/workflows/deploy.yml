@@ -1,5 +1,4 @@
 name: Deploy in environment
-
 on:
   workflow_call:
     inputs:
@@ -50,7 +49,7 @@ jobs:
               - 'live/prod/**'
             envcommon:
               - '_envcommon/**'
-      
+
       - name: Check changed files
         uses: actions/github-script@v3
         if: |
@@ -58,7 +57,7 @@ jobs:
           (steps.changes.outputs.dev == 'true' && inputs.execution_environment != 'dev') ||
           (steps.changes.outputs.pre == 'true' && inputs.execution_environment != 'pre') ||
           (steps.changes.outputs.prod == 'true' && inputs.execution_environment != 'prod')
-        env: 
+        env:
           SANDBOX_FILES: ${{ steps.changes.outputs.sandbox_files }}
           DEV_FILES: ${{ steps.changes.outputs.dev_files }}
           PRE_FILES: ${{ steps.changes.outputs.pre_files }}
@@ -69,10 +68,12 @@ jobs:
           github-token: ${{secrets.GITHUB_TOKEN}}
           script: |
             const { SANDBOX_FILES, DEV_FILES, PRE_FILES, PROD_FILES, ENVCOMMON_FILES, ENV } = process.env
-            const { printStuff, checkEnv, stringToList } = await import('${{ github.workspace }}/.github/helper/src/function.js')
-            
-            const list = await stringToList(SANDBOX_FILES)
-            console.log(list)
+            const { printStuff, checkEnv, changedFilesByEnv } = await import('${{ github.workspace }}/.github/helper/src/function.js')
+
+            const map = await changedFilesByEnv(SANDBOX_FILES, DEV_FILES, PRE_FILES, PROD_FILES)
+
+            console.log(map)
+
             github.issues.createComment({
               issue_number: context.issue.number,
               owner: context.repo.owner,
