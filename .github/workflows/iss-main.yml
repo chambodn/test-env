@@ -1,74 +1,61 @@
-name: Test
+name: Process IssueComment events
 on:
   issue_comment:
-    
+
+permissions:
+  id-token: write
+  contents: read
+  pull-requests: write
+
 # This allows a subsequently queued workflow run to interrupt previous runs
 concurrency:
   group: "${{ github.workflow }} @ ${{ github.event.pull_request.head.label || github.head_ref || github.ref }}"
   cancel-in-progress: true
 
 jobs:
-  check:
-    permissions:
-      contents: read
-      pull-requests: read
+  
+  init:
+    if: contains(github.event.comment.html_url, '/pull') # Check if the comments come from pull request, excluse comments from issue.
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout
-        uses: actions/checkout@v3
-      - name: Get branch name
-        id: branch
+      - id: 'get-branch'
+        run: echo ::set-output name=branch::$(gh pr view $PR_NO --repo $REPO --json headRefName --jq '.headRefName')
         env:
+          REPO: ${{ github.repository }}
+          PR_NO: ${{ github.event.issue.number }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          PRNUM: ${{ github.event.pull_request.number }}
-          GITHUB_CONTEXT: ${{ toJSON(github) }}         
-        run: |
-          echo "$GITHUB_CONTEXT"
-          echo "::set-output name=name::$(gh pr view $PRNUM --json headRefName -q .headRefName)"
-      - name: print
-        run: echo "${{ steps.branch.outputs.name }}"
-  # dev:
-  #   name: deploy-in-dev
-  #   environment: dev
-  #   permissions:
-  #     contents: read
-  #     pull-requests: write
-  #   runs-on: ubuntu-latest
-  #   steps:
-  #     - name: Test.
-  #       run: |
-  #         echo "Running on pr: ${{ github.ref }}"
+      - run: echo ${{ steps.get-branch.outputs.branch }}
+    outputs:
+      branch: ${{ steps.get-branch.outputs.branch }}
+  
+  deploy-in-sandbox:
+    if: startsWith(need.init.outputs.branch, 'sandbox/')
+    uses: ./.github/workflows/deploy.yml
+    needs: init
+    with:
+      execution_environment: sandbox
+    secrets: inherit
 
-  #     - name: Checkout
-  #       uses: actions/checkout@v3
+  deploy-in-dev:
+    if: startsWith(need.init.outputs.branch, 'dev/')
+    uses: ./.github/workflows/deploy.yml
+    needs: init
+    with:
+      execution_environment: dev
+    secrets: inherit
 
-  #     - name: Check env
-  #       run: echo "The current environment is ${{ secrets.ENV_NAME }}"
-
-  #     # Checks to see if any files in the PR match one of the listed file types.
-  #     # We can use this filter to decide whether or not to run linters or tests.
-  #     # You can check if a file with a listed file type is in the PR by doing:
-  #     # if: ${{ steps.filter.outputs.md == 'true' }}
-  #     # This will return true if there's a markdown file that was changed
-  #     # in the PR.
-  #     - uses: dorny/paths-filter@v2
-  #       id: filter
-  #       with:
-  #         filters: |
-  #           sandbox:
-  #             - 'live/sandbox/**'
-  #           dev:
-  #             - 'live/dev/**'
-  #           envcommon:
-  #             - '_envcommon/**'
-
-  #     - uses: actions/github-script@v3
-  #       with:
-  #         github-token: ${{secrets.GITHUB_TOKEN}}
-  #         script: |
-  #           github.issues.createComment({
-  #             issue_number: context.issue.number,
-  #             owner: context.repo.owner,
-  #             repo: context.repo.repo,
-  #             body: '❌🚫 Thanks for reporting!'
-  #           })
+  deploy-in-pre:
+    if: startsWith(need.init.outputs.branch, 'pre/')
+    uses: ./.github/workflows/deploy.yml
+    needs: init
+    with:
+      execution_environment: pre
+    secrets: inherit
+  
+  deploy-in-prod:
+    if: startsWith(need.init.outputs.branch, 'prod/')
+    uses: ./.github/workflows/deploy.yml
+    needs: init
+    with:
+      execution_environment: prod
+    secrets: inherit
