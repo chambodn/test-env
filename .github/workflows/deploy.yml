@@ -67,16 +67,16 @@ jobs:
         with:
           github-token: ${{secrets.GITHUB_TOKEN}}
           script: |
-            const { SANDBOX_FILES, DEV_FILES, PRE_FILES, PROD_FILES, ENVCOMMON_FILES, ENV } = process.env
-            const { changedFilesByEnv, listOfIncorrectFiles } = await import('${{ github.workspace }}/.github/helper/src/function.js')
+            const { SANDBOX_FILES, DEV_FILES, PRE_FILES, PROD_FILES, ENVCOMMON_FILES, ENV } = process.env;
+            const { changedFilesByEnv, listOfIncorrectFiles } = await import('${{ github.workspace }}/.github/helper/src/function.js');
 
-            const map = await changedFilesByEnv(SANDBOX_FILES, DEV_FILES, PRE_FILES, PROD_FILES)
-            console.log(map)
-            const list = await listOfIncorrectFiles(map)
-            console.log(list)
+            const map = await changedFilesByEnv(SANDBOX_FILES, DEV_FILES, PRE_FILES, PROD_FILES);
+            console.log(map);
+            const list = await listOfIncorrectFiles(map);
+            console.log(list);
 
             if (list.length) > 0 {
-              const result = list.join("\r\n")
+              const result = list.join("\r\n");
               github.issues.createComment({
                 issue_number: context.issue.number,
                 owner: context.repo.owner,
@@ -84,9 +84,9 @@ jobs:
                 body: `❌🚫 **WARNING** You are trying to update files located in a different environment than the environment you are targeting (${{ inputs.execution_environment }})! 
                   Please check the following file(s): 
                       ${result}
-                `
-              })
-              core.setFailed('You are trying to update files located in a different environment than the environment you are targeting')
+                `;
+              });
+              core.setFailed('You are trying to update files located in a different environment than the environment you are targeting');
             }
 
   deploy:
