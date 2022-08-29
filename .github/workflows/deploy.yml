@@ -84,7 +84,7 @@ jobs:
                 body: `❌🚫 **WARNING** You are trying to update files located in a different environment than the environment you are targeting (${{ inputs.execution_environment }})! 
                   Please check the following file(s): 
                       ${result}
-                `;
+                `
               });
               core.setFailed('You are trying to update files located in a different environment than the environment you are targeting');
             }
