@@ -13,5 +13,5 @@ export function listOfIncorrectFiles(filesPerEnv, currentEnv) {
     filesPerEnv.delete(currentEnv)// filter env first
     const values = [...filesPerEnv.values()]
     const list = Array.prototype.concat.apply([], values);//flatten array of arrays
-    return list.filter(elem => elem.length == 0);
+    return list.filter(elem => elem.length > 0);
 }
