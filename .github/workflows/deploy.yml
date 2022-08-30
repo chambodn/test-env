@@ -38,9 +38,9 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       
       - name: Debug
+        run: echo "$GITHUB_CONTEXT"
         env:
           GITHUB_CONTEXT: ${{ toJson(github) }}
-        run: echo "$GITHUB_CONTEXT"
           
       - name: Get changed files
         id: changed-files
@@ -49,6 +49,7 @@ jobs:
           files_ignore: |
             .github/**
             *.md
+
       - name: List all changed files
         run: |
           for file in ${{ steps.changed-files.outputs.all_changed_files }}; do
@@ -58,6 +59,7 @@ jobs:
       - name: check changed files
         if: |
           steps.changed-files.outputs.all_changed_files
+          
       # - name: Check changed files
       #   uses: actions/github-script@v3
       #   env:
