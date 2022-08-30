@@ -34,29 +34,36 @@ jobs:
       execution_environment: sandbox
     secrets: inherit
 
-  deploy-in-dev:
-    if: |
-      !github.event.pull_request.draft &&
-      startsWith(github.head_ref, 'dev/')
-    uses: ./.github/workflows/deploy.yml
-    with:
-      execution_environment: dev
-    secrets: inherit
+  #     - name: Checkout
+  #       uses: actions/checkout@v3
 
-  deploy-in-pre:
-    if: |
-      !github.event.pull_request.draft &&
-      startsWith(github.head_ref, 'pre/')
-    uses: ./.github/workflows/deploy.yml
-    with:
-      execution_environment: pre
-    secrets: inherit
-  
-  deploy-in-prod:
-    if: |
-      !github.event.pull_request.draft &&
-      startsWith(github.head_ref, 'prod/')
-    uses: ./.github/workflows/deploy.yml
-    with:
-      execution_environment: prod
-    secrets: inherit
+  #     - name: Check env
+  #       run: echo "The current environment is ${{ secrets.ENV_NAME }}"
+
+  #     # Checks to see if any files in the PR match one of the listed file types.
+  #     # We can use this filter to decide whether or not to run linters or tests.
+  #     # You can check if a file with a listed file type is in the PR by doing:
+  #     # if: ${{ steps.filter.outputs.md == 'true' }}
+  #     # This will return true if there's a markdown file that was changed
+  #     # in the PR.
+  #     - uses: dorny/paths-filter@v2
+  #       id: filter
+  #       with:
+  #         filters: |
+  #           sandbox:
+  #             - 'live/sandbox/**'
+  #           dev:
+  #             - 'live/dev/**'
+  #           envcommon:
+  #             - '_envcommon/**'
+
+  #     - uses: actions/github-script@v3
+  #       with:
+  #         github-token: ${{secrets.GITHUB_TOKEN}}
+  #         script: |
+  #           github.issues.createComment({
+  #             issue_number: context.issue.number,
+  #             owner: context.repo.owner,
+  #             repo: context.repo.repo,
+  #             body: '❌🚫 Thanks for reporting!'
+  #           })
