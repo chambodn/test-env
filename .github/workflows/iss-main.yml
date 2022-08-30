@@ -14,7 +14,11 @@ concurrency:
 jobs:
   
   init:
-    if: contains(github.event.comment.html_url, '/pull') # Check if the comments come from pull request, excluse comments from issue.
+    # Check if the comments come from pull request and starts with atlantis
+    # exclude comments from issue.
+    if: |
+      contains(github.event.comment.html_url, '/pull') && 
+      startsWith(github.event.comment.body, 'atlantis') 
     runs-on: ubuntu-latest
     steps:
       - id: 'get-branch'
@@ -33,6 +37,7 @@ jobs:
     needs: init
     with:
       execution_environment: sandbox
+      branch: ${{ needs.init.outputs.branch }}
     secrets: inherit
 
   deploy-in-dev:
@@ -41,6 +46,7 @@ jobs:
     needs: init
     with:
       execution_environment: dev
+      branch: ${{ needs.init.outputs.branch }}
     secrets: inherit
 
   deploy-in-pre:
@@ -49,6 +55,7 @@ jobs:
     needs: init
     with:
       execution_environment: pre
+      branch: ${{ needs.init.outputs.branch }}
     secrets: inherit
   
   deploy-in-prod:
@@ -57,4 +64,5 @@ jobs:
     needs: init
     with:
       execution_environment: prod
+      branch: ${{ needs.init.outputs.branch }}
     secrets: inherit

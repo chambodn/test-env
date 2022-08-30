@@ -3,7 +3,6 @@ on:
   pull_request:
     types:
       - opened
-      - reopened
       - closed
     paths-ignore:
         - 'docs/**'
@@ -31,6 +30,7 @@ jobs:
     uses: ./.github/workflows/deploy.yml
     with:
       execution_environment: sandbox
+      branch: github.head_ref
     secrets: inherit
 
   deploy-in-dev:
@@ -40,6 +40,7 @@ jobs:
     uses: ./.github/workflows/deploy.yml
     with:
       execution_environment: dev
+      branch: github.head_ref
     secrets: inherit
 
   deploy-in-pre:
@@ -49,6 +50,7 @@ jobs:
     uses: ./.github/workflows/deploy.yml
     with:
       execution_environment: pre
+      branch: github.head_ref
     secrets: inherit
   
   deploy-in-prod:
@@ -58,4 +60,5 @@ jobs:
     uses: ./.github/workflows/deploy.yml
     with:
       execution_environment: prod
+      branch: github.head_ref
     secrets: inherit
