@@ -56,10 +56,10 @@ jobs:
             echo "$file was changed"
           done
       
-      - name: check changed files
-        if: |
-          steps.changed-files.outputs.all_changed_files
-          
+      # - name: check changed files
+      #   if: |
+      #     steps.changed-files.outputs.all_changed_files
+
       # - name: Check changed files
       #   uses: actions/github-script@v3
       #   env:
