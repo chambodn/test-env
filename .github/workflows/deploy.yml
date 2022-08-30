@@ -33,55 +33,65 @@ jobs:
         run: hub pr checkout ${{ github.event.issue.number }}
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+     
+      - name: Get changed files
+        id: changed-files
+        uses: tj-actions/changed-files@v29.0.2
 
-      - uses: dorny/paths-filter@v2
-        id: changes
-        with:
-          list-files: csv
-          filters: |
-            sandbox:
-              - 'live/sandbox/**'
-            dev:
-              - 'live/dev/**'
-            pre:
-              - 'live/pre/**'
-            prod:
-              - 'live/prod/**'
-            envcommon:
-              - '_envcommon/**'
+      - name: List all changed files
+        run: |
+          for file in ${{ steps.changed-files.outputs.all_changed_files }}; do
+            echo "$file was changed"
+          done
 
-      - name: Check changed files
-        uses: actions/github-script@v3
-        env:
-          SANDBOX_FILES: ${{ steps.changes.outputs.sandbox_files }}
-          DEV_FILES: ${{ steps.changes.outputs.dev_files }}
-          PRE_FILES: ${{ steps.changes.outputs.pre_files }}
-          PROD_FILES: ${{ steps.changes.outputs.prod_files }}
-          ENVCOMMON_FILES: ${{ steps.changes.outputs.envcommon_files }}
-          ENV: ${{ inputs.execution_environment }}
-        with:
-          github-token: ${{secrets.GITHUB_TOKEN}}
-          script: |
-            const { SANDBOX_FILES, DEV_FILES, PRE_FILES, PROD_FILES, ENVCOMMON_FILES, ENV } = process.env;
-            const { changedFilesByEnv, listOfIncorrectFiles } = await import('${{ github.workspace }}/.github/helper/src/function.js');
+      # - uses: dorny/paths-filter@v2
+      #   id: changes
+      #   with:
+      #     list-files: csv
+      #     filters: |
+      #       sandbox:
+      #         - 'live/sandbox/**'
+      #       dev:
+      #         - 'live/dev/**'
+      #       pre:
+      #         - 'live/pre/**'
+      #       prod:
+      #         - 'live/prod/**'
+      #       envcommon:
+      #         - '_envcommon/**'
 
-            const map = await changedFilesByEnv(SANDBOX_FILES, DEV_FILES, PRE_FILES, PROD_FILES);
-            console.log(map);
-            const list = await listOfIncorrectFiles(map);
-            console.log(list);
+      # - name: Check changed files
+      #   uses: actions/github-script@v3
+      #   env:
+      #     SANDBOX_FILES: ${{ steps.changes.outputs.sandbox_files }}
+      #     DEV_FILES: ${{ steps.changes.outputs.dev_files }}
+      #     PRE_FILES: ${{ steps.changes.outputs.pre_files }}
+      #     PROD_FILES: ${{ steps.changes.outputs.prod_files }}
+      #     ENVCOMMON_FILES: ${{ steps.changes.outputs.envcommon_files }}
+      #     ENV: ${{ inputs.execution_environment }}
+      #   with:
+      #     github-token: ${{secrets.GITHUB_TOKEN}}
+      #     script: |
+      #       const { SANDBOX_FILES, DEV_FILES, PRE_FILES, PROD_FILES, ENVCOMMON_FILES, ENV } = process.env;
+      #       const { changedFilesByEnv, listOfIncorrectFiles } = await import('${{ github.workspace }}/.github/helper/src/function.js');
 
-            if (list.length > 0) {
-              const result = list.join("\n\r");
-              github.issues.createComment({
-                issue_number: context.issue.number,
-                owner: context.repo.owner,
-                repo: context.repo.repo,
-                body: `❌🚫 **WARNING** You are trying to update files located in a different environment than the environment you are targeting (${{ inputs.execution_environment }})! 
-                  Please check the following file(s): 
-                      ${result}
-              });
-              core.setFailed('You are trying to update files located in a different environment than the environment you are targeting');
-            }
+      #       const map = await changedFilesByEnv(SANDBOX_FILES, DEV_FILES, PRE_FILES, PROD_FILES);
+      #       console.log(map);
+      #       const list = await listOfIncorrectFiles(map);
+      #       console.log(list);
+
+      #       if (list.length > 0) {
+      #         const result = list.join("\n\r");
+      #         github.issues.createComment({
+      #           issue_number: context.issue.number,
+      #           owner: context.repo.owner,
+      #           repo: context.repo.repo,
+      #           body: `❌🚫 **WARNING** You are trying to update files located in a different environment than the environment you are targeting (${{ inputs.execution_environment }})! 
+      #             Please check the following file(s): 
+      #                 ${result}
+      #         });
+      #         core.setFailed('You are trying to update files located in a different environment than the environment you are targeting');
+      #       }
 
   deploy:
     name: deploy
