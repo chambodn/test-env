@@ -33,6 +33,7 @@ jobs:
     needs: init
     with:
       execution_environment: sandbox
+      branch: needs.init.outputs.branch
     secrets: inherit
 
   deploy-in-dev:
@@ -41,6 +42,7 @@ jobs:
     needs: init
     with:
       execution_environment: dev
+      branch: needs.init.outputs.branch
     secrets: inherit
 
   deploy-in-pre:
@@ -49,6 +51,7 @@ jobs:
     needs: init
     with:
       execution_environment: pre
+      branch: needs.init.outputs.branch
     secrets: inherit
   
   deploy-in-prod:
@@ -57,4 +60,5 @@ jobs:
     needs: init
     with:
       execution_environment: prod
+      branch: needs.init.outputs.branch
     secrets: inherit

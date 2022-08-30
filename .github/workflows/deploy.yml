@@ -5,6 +5,9 @@ on:
       execution_environment:
         required: true
         type: string
+      branch:
+        type: string
+        required: true
 
 jobs:
   apply-label:
@@ -23,7 +26,7 @@ jobs:
     name: check-status
     runs-on: ubuntu-latest
     steps:
-      - run: echo "Target env ${{ inputs.execution_environment }}"
+      - run: echo "Target env ${{ inputs.execution_environment }} for branch ${{ inputs.branch }}"
       
       - name: Checkout
         uses: actions/checkout@v3
@@ -37,8 +40,7 @@ jobs:
       - uses: nrwl/last-successful-commit-action@v1
         id: last_successful_commit_push
         with:
-          branch: ${{ steps.branch-name.outputs.current_branch }} # Get the last successful commit for the current branch. 
-          workflow_id: 'test.yml'
+          branch: ${{ inputs.branch }} # Get the last successful commit for the current branch. 
           github_token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Get changed files
